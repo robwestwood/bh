@@ -17,20 +17,22 @@ module Bh
           request.path_info == @app.url_for(@url)
         when :middleman
           return false if @url.nil?
-          url_s = @url.to_s # We expect url to be a string, but just in case
+          
+          url = @app.url_for(@url)  # Normalise our input URL in Middleman way
+          
           # The middleman-generated path may or may not end with a slash (depending)
           #  on the setting of set :trailing_slash; in either case @url can be a
           #  user-generated url which may or may not end in the way that matches
           #  that of middleman-generated paths
-          if url_s.end_with?('/')
-            url_with_slash = url_s
-            url_without_slash = url_s.chomp('/')
+          if url.end_with?('/')
+            url_with_slash = url
+            url_without_slash = url.chomp('/')
           else
-            url_without_slash = url_s
-            url_with_slash = url_s + '/'
+            url_without_slash = url
+            url_with_slash = url + '/'
           end
           current_resource_url = @app.url_for(@app.current_resource)
-          current_resource_url == @app.url_for(url_with_slash) || current_resource_url == @app.url_for(url_without_slash)
+          current_resource_url == url_with_slash || current_resource_url == url_without_slash
         end
       end
 
